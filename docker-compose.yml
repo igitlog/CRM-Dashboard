@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: crm
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - crm-network
+
+  app:
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile.dev}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://admin:admin@db:5432/crm"
+    volumes:
+      - .:/usr/src/app:delegated  # Монтируем локальный проект
+      - node_modules:/usr/src/app/node_modules  # Используем volume для node_modules
+    stdin_open: true
+    tty: true
+    command: >
+      sh -c "npx prisma generate && npm run dev"  # Генерация Prisma Client перед запуском сервера
+    networks:
+      - crm-network 
+
+volumes:
+  db_data:
+  node_modules:
+networks:
+  crm-network:  # Определяем общую сеть
+    driver: bridge  # Используем стандартный драйвер сети

@@ -9,20 +9,34 @@
     </div>
   </template>
   
-  <script setup>
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
+  <script lang="ts">
+  import { defineComponent } from 'vue';
+  import { PrismaClient } from '@prisma/client';
   
-  const username = ref('');
-  const password = ref('');
-  const router = useRouter();
+  const prisma = new PrismaClient();
   
-  const login = () => {
-    if (username.value === 'admin' && password.value === 'admin') {
-      router.push('/dashboard');
-    } else {
-      alert('Invalid credentials');
-    }
-  };
+  export default defineComponent({
+    data() {
+      return {
+        username: '',
+        password: '',
+      };
+    },
+    methods: {
+      async login() {
+        const user = await prisma.user.findUnique({
+          where: { username: this.username },
+        });
+  
+        if (user && user.password === this.password) {
+          // Логика успешного входа
+          console.log('Login successful');
+        } else {
+          // Логика неудачного входа
+          console.log('Invalid credentials');
+        }
+      },
+    },
+  });
   </script>
   

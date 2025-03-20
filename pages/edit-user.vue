@@ -30,7 +30,7 @@
   });
   
   const saveUser = () => {
-    userStore.updateUser(Number(route.query.id), user.value);
+    userStore.updateUser(Number(route.query.id), user.value); // Обновление в хранилище
     router.push('/dashboard');
   };
   </script>

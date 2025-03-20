@@ -1,0 +1,18 @@
+# Используем Node.js LTS
+FROM node:18
+
+# Устанавливаем рабочую директорию
+WORKDIR /usr/src/app
+
+# Копируем package.json и устанавливаем зависимости
+COPY package*.json ./
+RUN npm install
+
+# Копируем код
+COPY . .
+
+# Открываем порт
+EXPOSE 3000
+
+# Запускаем Nuxt в режиме разработки
+CMD ["npm", "run", "dev", "--force"]
