@@ -7,13 +7,19 @@
       <h2 class="text-xl font-semibold mb-3 text-gray-700">Добавить пользователя</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <input 
-          v-model="newUser.name" 
+          v-model="newUser.username" 
           placeholder="Имя"
           class="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
         <input 
           v-model="newUser.email" 
           placeholder="Email"
+          class="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        />
+        <input 
+          v-model="newUser.password" 
+          type="password"
+          placeholder="Пароль"
           class="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
         <button 
@@ -71,7 +77,7 @@ import { useRouter } from 'vue-router';
 
 const userStore = useUserStore();
 const router = useRouter();
-const newUser = ref({ username: '', email: '' });
+const newUser = ref({ username: '', email: '', password: '' });
 
 const users = ref([]);
 
@@ -84,17 +90,17 @@ watch(() => userStore.users, (newUsers) => {
   users.value = newUsers;
 });
 
-const addUser = () => {
-  if (!newUser.value.username || !newUser.value.email) return;
-  userStore.addUser({ ...newUser.value });
-  newUser.value = { username: '', email: '' };
+const addUser = async () => {
+  if (!newUser.value.username || !newUser.value.email || !newUser.value.password) return;
+  await userStore.addUser({ ...newUser.value });
+  newUser.value = { username: '', email: '', password: '' };
 };
 
 const editUser = (id) => {
   router.push(`/edit-user?id=${id}`);
 };
 
-const deleteUser = (id) => {
-  userStore.deleteUser(id);
+const deleteUser = async (id) => {
+  await userStore.deleteUser(id);
 };
 </script>

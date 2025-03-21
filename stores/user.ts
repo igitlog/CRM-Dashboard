@@ -22,12 +22,40 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  const addUser = (user: User): void => {
-    users.value.push(user);
+  const addUser = async (user: User): Promise<void> => {
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to add user: ${response.statusText}`);
+      }
+
+      // После успешного добавления, обновляем список пользователей
+      await fetchUsers();
+    } catch (error) {
+      console.error('Add user error:', error);
+    }
   };
 
-  const deleteUser = (id: number): void => {
-    users.value = users.value.filter((user) => user.id !== id);
+  const deleteUser = async (id: number): Promise<void> => {
+    try {
+      const response = await fetch(`/api/users?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete user: ${response.statusText}`);
+      }
+
+      // После успешного удаления, обновляем список пользователей
+      await fetchUsers();
+    } catch (error) {
+      console.error('Delete user error:', error);
+    }
   };
 
   const updateUser = async (userId, updatedUser) => {
@@ -53,8 +81,6 @@ export const useUserStore = defineStore('user', () => {
       console.error('Update error:', error);
     }
   };
-
-
 
   return { users, fetchUsers, addUser, deleteUser, updateUser };
 });
